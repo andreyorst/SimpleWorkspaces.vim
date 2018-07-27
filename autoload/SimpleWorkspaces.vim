@@ -1,12 +1,3 @@
-
-" ╭─────────────╥──────────────────────╮
-" │ Author:     ║ File:                │
-" │ Andrey Orst ║ SimpleWorkspaces.vim │
-" ╞═════════════╩══════════════════════╡
-" │ Last change: 07.27.2018            │
-" │ version: 0.0.1                     │
-" ╰────────────────────────────────────╯
-
 let s:current_workspace_path = ''
 
 if exists('g:load_previous_workspace')
@@ -16,7 +7,7 @@ if exists('g:load_previous_workspace')
 endif
 
 function! SimpleWorkspaces#init(...)
-	if a:0 == 0
+	if a:0 == 0 || a:1 == ''
 		let l:current_dir = fnameescape(getcwd())
 	elseif a:0 == 1
 		let l:current_dir = a:1
@@ -92,6 +83,7 @@ function! SimpleWorkspaces#rm(...)
 		return -1
 	endif
 	if fnameescape(getcwd()) == s:current_workspace_path
+		let l:path = substitute(l:path, '\v(.*)/.*', '\1', &gd ? 'gg' : 'g')
 		return s:Delete(l:path, "[ERROR] cannot delete ".l:path)
 	else
 		echo "[ERROR] Not inside workspace"
