@@ -9,10 +9,6 @@
 
 let s:current_workspace_path = ''
 
-if !exists('g:workspace_prefix')
-	let g:workspace_prefix = $HOME.'/.cache/vim_workspaces'
-endif
-
 if exists('g:load_previous_workspace')
 	if g:load_previous_workspace > 0
 		"call WorkspaceOpen(g:previous_workspace)
