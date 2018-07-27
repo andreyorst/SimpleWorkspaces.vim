@@ -11,7 +11,7 @@ if !exists('g:workspace_prefix')
 	let g:workspace_prefix = $HOME.'/.cache/vim_workspaces'
 endif
 
-command! -nargs=? -complete=file WorkspaceInit call WorkspaceInit('<args>')
-command! -nargs=? -complete=file WorkspaceAdd call WorkspaceAdd('<args>')
-command! -nargs=? -complete=file WorkspaceRm call WorkspaceRm('<args>')
-command! -nargs=? -complete=file WorkspaceOpen call WorkspaceOpen('<args>')
+command! -nargs=? -complete=file WorkspaceInit call SimpleWorkspaces#init('<args>')
+command! -nargs=? -complete=file WorkspaceAdd call SimpleWorkspaces#add('<args>')
+command! -nargs=? -complete=file WorkspaceRm call SimpleWorkspaces#rm('<args>')
+command! -nargs=? -complete=file WorkspaceOpen call SimpleWorkspaces#open('<args>')

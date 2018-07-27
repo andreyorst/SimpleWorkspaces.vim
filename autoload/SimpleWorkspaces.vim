@@ -11,11 +11,11 @@ let s:current_workspace_path = ''
 
 if exists('g:load_previous_workspace')
 	if g:load_previous_workspace > 0
-		"call WorkspaceOpen(g:previous_workspace)
+		"call SimpleWorkspaces#open(g:previous_workspace)
 	endif
 endif
 
-function! WorkspaceInit(...)
+function! SimpleWorkspaces#init(...)
 	if a:0 == 0
 		let l:current_dir = fnameescape(getcwd())
 	elseif a:0 == 1
@@ -59,7 +59,7 @@ function! WorkspaceInit(...)
 	endif
 endfunction
 
-function! WorkspaceAdd(...)
+function! SimpleWorkspaces#add(...)
 	if a:0 == 0
 		let l:path = input("Path to directory or file: ")
 	elseif a:0 == 1
@@ -74,7 +74,7 @@ function! WorkspaceAdd(...)
 		let l:answer = input("No active workspace found. Create new workspace? [Y/n]: ")
 		if l:answer ==? 'y' || l:answer == ''
 			try
-				call WorkspaceInit()
+				call SimpleWorkspaces#init()
 			catch
 				echo "[ERROR] Cannot add ".l:path." to workspace"
 				return -1
@@ -86,7 +86,7 @@ function! WorkspaceAdd(...)
 	endif
 endfunction
 
-function! WorkspaceRm(...)
+function! SimpleWorkspaces#rm(...)
 	if a:0 == 0
 		let l:path = expand(input("Directory or file to delete: "))
 	elseif a:0 == 1
@@ -121,7 +121,7 @@ function! s:CreateWorkspace(dir, workspace_path)
 	endif
 endfunction
 
-function! WorkspaceOpen(workspace_path)
+function! SimpleWorkspaces#open(workspace_path)
 	let l:match = match(g:workspace_prefix.'/'.a:workspace_path, expand(a:workspace_path))
 	if l:match > 0
 		if isdirectory(fnameescape(expand(g:workspace_prefix.'/'.a:workspace_path)))
