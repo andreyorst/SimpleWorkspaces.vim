@@ -25,7 +25,7 @@ function! SimpleWorkspaces#init(...)
 		return -1
 	endif
 	let l:workspace_name = 'workspace_'.getpid()
-	let s:current_workspace_path = fnameescape(g:workspace_prefix.'/'.l:workspace_name)
+	let s:current_workspace_path = expand(g:workspace_prefix.'/'.l:workspace_name)
 	if !isdirectory(g:workspace_prefix)
 		let l:answer = input("Cannot reach workspace prefix. Create ".g:workspace_prefix."? [Y/n] ")
 		if l:answer ==? 'y' || l:answer == ''
@@ -61,7 +61,7 @@ endfunction
 
 function! SimpleWorkspaces#add(...)
 	if a:0 == 0
-		let l:path = input("Path to directory or file: ")
+		let l:path = input("Path to directory or file: ", "file")
 	elseif a:0 == 1
 		let l:path = a:1
 	else
@@ -71,14 +71,10 @@ function! SimpleWorkspaces#add(...)
 	if fnameescape(getcwd()) == s:current_workspace_path
 		return s:MakeLink(l:path, s:current_workspace_path)
 	else
+		let l:path = fnameescape(getcwd()).'/'.l:path
 		let l:answer = input("No active workspace found. Create new workspace? [Y/n]: ")
 		if l:answer ==? 'y' || l:answer == ''
-			try
-				call SimpleWorkspaces#init()
-			catch
-				echo "[ERROR] Cannot add ".l:path." to workspace"
-				return -1
-			endtry
+			call SimpleWorkspaces#init()
 			return s:MakeLink(l:path, s:current_workspace_path)
 		else
 			return 0
@@ -88,14 +84,14 @@ endfunction
 
 function! SimpleWorkspaces#rm(...)
 	if a:0 == 0
-		let l:path = expand(input("Directory or file to delete: "))
+		let l:path = expand(input("Directory or file to delete: ", "file"))
 	elseif a:0 == 1
 		let l:path = a:1
 	else
 		echo "[ERROR] Too many arguments"
 		return -1
 	endif
-	if fnameescape(expand(getcwd())) == s:current_workspace_path
+	if fnameescape(getcwd()) == s:current_workspace_path
 		return s:Delete(l:path, "[ERROR] cannot delete ".l:path)
 	else
 		echo "[ERROR] Not inside workspace"
@@ -105,7 +101,7 @@ endfunction
 
 function! s:CreateWorkspace(dir, workspace_path)
 	try
-		call mkdir(fnameescape(a:workspace_path), 'p')
+		call mkdir(a:workspace_path, 'p')
 	catch
 		echo "[ERROR] Cannot create workspace at ".a:workspace_path
 		return -1
@@ -124,7 +120,7 @@ endfunction
 function! SimpleWorkspaces#open(workspace_path)
 	let l:match = match(g:workspace_prefix.'/'.a:workspace_path, expand(a:workspace_path))
 	if l:match > 0
-		if isdirectory(fnameescape(expand(g:workspace_prefix.'/'.a:workspace_path)))
+		if isdirectory(expand(g:workspace_prefix.'/'.a:workspace_path))
 			exec "cd ".g:workspace_prefix.'/'.a:workspace_path
 			return 0
 		endif
@@ -164,7 +160,7 @@ function! s:MakeLink(path, workspace)
 endfunction
 
 function! s:Delete(path, prompt)
-	if !isdirectory(fnameescape(expand(a:path))) && !filereadable(fnameescape(expand(a:path)))
+	if !isdirectory(expand(a:path)) && !filereadable(expand(a:path))
 		redraw
 		echo a:prompt
 		return -1
