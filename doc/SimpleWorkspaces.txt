@@ -1,0 +1,110 @@
+*SimpleWorkspaces.txt*    For Vim 8.0 and NeoVim 0.3.* or later.
+*clang-format* *clangformat* *SimpleWorkspaces*
+
+                _~
+               /_`._ _  _  /_ | | |_  _/_ __  _  _  _     ._ _~
+              ._/// / //_///_'|/|//_///\_\/_//_|/_ /_'.|/// / /~
+                      /                  /~
+
+==============================================================================
+CONTENTS                                             *SimpleWorkspaces-contents*
+
+ 1. Description ................................ |SimpleWorkspaces-description|
+    1.1 Requirements .......................... |SimpleWorkspaces-requirements|
+ 2. Installation and Updating ............... |SimpleWorkspaces-installnupdate|
+ 3. Settings & Commands ........................... |SimpleWorkspaces-settings|
+    3.1 Settings .................................. |SimpleWorkspaces-settings|
+    3.2 Commands .................................. |SimpleWorkspaces-commands|
+    3.3 Mappings .................................. |SimpleWorkspaces-mappings|
+ 4. Contributing .............................. |SimpleWorkspaces-contributing|
+
+==============================================================================
+1. Description                                    *SimpleWorkspaces-description*
+
+SimpleWorkspaces.vim is a simple plugin that provides Visual Studio Code  like
+workspace feature to vim and neovim.   Workspaces  are  used  to  add  certain
+folders or files to separate working directory, so you can access  files  from
+different locations, just like if they are at the same folder.  You  can  read
+more about workspaces at Visual Studio Code docs:
+`https://code.visualstudio.com/docs/editor/multi-root-workspaces`
+
+Each  workspace  is  stored  with  name  that  consists  of  `workspace_`  and
+`getpid()` result. `getpid()` return current vim process ID. For example:
+
+  `workspace_17809`
+
+1.1 Requirements                                 *SimpleWorkspaces-requirements*
+----------------
+
+This plugin is tested against Vim 8.0, Vim 7.4.1689  and  NeoVim  0.3.*.   All
+other versions are not supported, but might work too.  This plugin works  only
+in 'nocompatible' mode.
+
+Windows support is in  initial  state,  feel  free  to  send  reports  if  you
+encounter any problems.
+
+
+==============================================================================
+2. Installation and Updating                   *SimpleWorkspaces-installnupdate*
+
+Recommended way to install SimpleWorkspaces  is to use plugin manager, such as
+Vundle, vim-plug, dein.nvim or others.  You can still install it  manually  by
+cloning master branch from github.  Assuming you're using  vim-plug  add  this
+line to your configuration file:
+
+  `Plug 'andreyorst/SimpleWorkspaces.vim'`
+
+Then do:
+
+  `:w | so % | PlugInstall`
+
+
+==============================================================================
+3. Settings & Commands                               *SimpleWorkspaces-settings*
+
+3.1 Settings
+------------
+
+SimpleWorkspaces   can   be   configured   where    to    store    workspaces.
+`g:workspace_prefix` variable stores a path to a folder, where workspaces  are
+stored. By default it is set to: `/tmp/`
+
+SimpleWorkspaces  can  open  your  previous  workspace   on   vim   open,   if
+`g:open_previous_workspace` variable is set to positive value.
+
+
+3.2 Commands                                         *SimpleWorkspaces-commands*
+------------
+
+SimpleWorkspaces provides  several  commands  to  manipulate  workspaces,  and
+files.
+
+`WorkspaceInit` will add current directory to new workspace.  You can  specify
+which directory to use.
+
+`WorkspaceAdd` will add directory or file to current workspace.  If no  active
+workspace found it will ask if you would like to  create  new  workspace,  and
+will init it with current directory, and then add desired directory.
+
+`WorkspaceDelete` work opposite to `WorkspaceAdd`.  It can  remove  files  and
+folders only from the workspace, and should not be used to remove  files  from
+added folders.
+
+`WorkspaceOpen` opens existing workspace folder.
+
+
+==============================================================================
+4. Contributing                                  *SimpleWorkspaces-contributing*
+
+If you found a bug, or want to implement a new feature or simplify/extend an
+existing one, feel free to send pull requests to SimpleWorkspaces GitHub
+repository.
+
+You can contribute by fixing or reporting bugs in our issue tracker:
+https://github.com/andreyorst/SimpleWorkspaces.vim/issues
+
+
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:nornu:nonu:scl=no
+
+
