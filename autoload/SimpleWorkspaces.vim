@@ -1,11 +1,5 @@
 let s:current_workspace_path = ''
 
-if exists('g:load_previous_workspace')
-	if g:load_previous_workspace > 0
-		"call SimpleWorkspaces#open(g:previous_workspace)
-	endif
-endif
-
 function! SimpleWorkspaces#init(...)
 	if a:0 == 0 || a:1 == ''
 		let l:current_dir = fnameescape(getcwd())
