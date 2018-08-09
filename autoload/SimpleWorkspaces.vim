@@ -152,18 +152,17 @@ function! s:MakeLink(path, workspace)
 endfunction
 
 function! SimpleWorkspaces#getWorkspaceMetadata()
+	let l:metadata = []
 	if !filereadable('./.workspace')
 		echo "[ERROR] Attemt to save workspace outside of workspace"
-		return 1
 	else
 		let l:metadata = readfile('./.workspace')
 		if match(l:metada[0], 'workspace name') != 0
 			echo "[ERROR] Corrupted workspace metadata"
-			return 1
-		else
+			let l:metadata = []
 		endif
-
 	endif
+	return l:metadata
 endfunction
 
 function! s:Delete(path, prompt)
