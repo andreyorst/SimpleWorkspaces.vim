@@ -27,7 +27,7 @@ function! SimpleWorkspaces#init(...)
 			catch
 				return -1
 			endtry
-			return s:CreateWorkspace(l:current_dir, s:current_workspace_path)
+			return s:CreateWorkspace(l:current_dir, g:workspace_prefix, l:workspace_name)
 		elseif l:answer ==? 'n' || l:answer == ''
 			let l:answer = input("Open workspace ".l:workspace_name. "? [Y/n]: ")
 			if  l:answer ==? 'y' || l:answer == ''
@@ -40,7 +40,7 @@ function! SimpleWorkspaces#init(...)
 			return -1
 		endif
 	else
-		return s:CreateWorkspace(l:current_dir, s:current_workspace_path)
+		return s:CreateWorkspace(l:current_dir, g:workspace_prefix, l:workspace_name)
 	endif
 endfunction
 
@@ -85,21 +85,27 @@ function! SimpleWorkspaces#rm(...)
 	endif
 endfunction
 
-function! s:CreateWorkspace(dir, workspace_path)
+function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
+	let l:workspace_path = expand(a:workspace_prefix.'/'.a:workspace_name)
 	try
-		call mkdir(a:workspace_path, 'p')
+		call mkdir(l:workspace_path, 'p')
 	catch
-		echo "[ERROR] Cannot create workspace at ".a:workspace_path
+		echo "[ERROR] Cannot create workspace at ".l:workspace_path
 		return -1
 	endtry
 	try
-		exec "cd ".a:workspace_path
+		exec "cd ".l:workspace_path
+		let l:metadata = [
+					\ 'workspace name: '.a:workspace_name,
+					\ 'date created: '. strftime('%b %d %Y %X'),
+					\ ]
+		call writefile(l:metadata, './.workspace', '')
 	catch
 		echo "[ERROR] Cannot change working directory to ".g:workspace_prefix
 		return -1
 	endtry
-	if a:dir != a:workspace_path
-		return s:MakeLink(a:dir, a:workspace_path)
+	if a:dir != l:workspace_path
+		return s:MakeLink(a:dir, l:workspace_path)
 	endif
 endfunction
 
@@ -143,6 +149,9 @@ function! s:MakeLink(path, workspace)
 		return -1
 	endif
 	return 0
+endfunction
+
+function! SimpleWorkspaces#getCurrentWorkspaceAsList()
 endfunction
 
 function! s:Delete(path, prompt)
