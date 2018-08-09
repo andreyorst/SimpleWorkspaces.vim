@@ -3,7 +3,6 @@ if exists('g:loaded_simpleworkspaces')
 endif
 
 let g:loaded_simpleworkspaces = 1
-let g:open_previous_workspace = 1
 
 augroup PreviousWorkspaceHandling
 	autocmd!
@@ -23,7 +22,7 @@ function! s:RestoreWorkspace()
 	if exists('g:open_previous_workspace')
 		if g:open_previous_workspace > 0 && filereadable(g:last_workspace)
 			let l:workspace_path = readfile(g:last_workspace)
-			call SimpleWorkspaces#open(l:workspace_path)
+			call SimpleWorkspaces#open(l:workspace_path[0])
 		endif
 	endif
 endfunction
@@ -31,7 +30,7 @@ endfunction
 function! s:SaveWorkspace()
 	if exists('g:open_previous_workspace')
 		if g:open_previous_workspace > 0
-			let l:workspace_path = SimpleWorkspaces#getCurrentWorkspaceAsList()
+			let l:workspace_path = SimpleWorkspaces#getWorkspaceMetadata()
 			call writefile(l:workspace_path, g:last_workspace, '')
 		endif
 	endif
