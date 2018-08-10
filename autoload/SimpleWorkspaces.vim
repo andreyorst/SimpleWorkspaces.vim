@@ -142,22 +142,21 @@ function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
 endfunction
 
 function! SimpleWorkspaces#open(workspace_path)
-	let l:match = match(g:workspace_prefix.'/'.a:workspace_path, expand(a:workspace_path))
-	if l:match > 0
-		if isdirectory(expand(g:workspace_prefix.'/'.a:workspace_path))
-			exec "cd ".g:workspace_prefix.'/'.a:workspace_path
-			return 0
-		endif
+	let l:match = match(expand(g:workspace_prefix.'/'.a:workspace_path), expand(a:workspace_path))
+	if l:match > 0 && isdirectory(expand(g:workspace_prefix.'/'.a:workspace_path))
+		let l:workspace_path = expand(g:workspace_prefix.'/'.a:workspace_path)
+	else
+		let l:workspace_path = a:workspace_path
 	endif
 	try
-		if filereadable(a:workspace_path.'/.workspace')
-			exec "cd ".a:workspace_path
+		if filereadable(l:workspace_path.'/.workspace')
+			exec "cd ".l:workspace_path
 			return 0
 		else
-			echo "[ERROR] Directory ".a:workspace_path." is not a workspace"
+			echo "[ERROR] Directory ".l:workspace_path." is not a workspace"
 		endif
 	catch
-		echo "[ERROR] Cannot change working directory to ".a:workspace_path
+		echo "[ERROR] Cannot change working directory to ".l:workspace_path
 		return -1
 	endtry
 endfunction
