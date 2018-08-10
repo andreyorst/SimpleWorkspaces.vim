@@ -41,5 +41,12 @@ endfunction
 command! -nargs=? -complete=file WorkspaceInit call SimpleWorkspaces#init('<args>')
 command! -nargs=? -complete=file WorkspaceAdd call SimpleWorkspaces#add('<args>')
 command! -nargs=? -complete=file WorkspaceDelete call SimpleWorkspaces#rm('<args>')
-command! -nargs=? -complete=file WorkspaceOpen call SimpleWorkspaces#open('<args>')
+command! -nargs=? -complete=custom,s:AvailableWorkspaces WorkspaceOpen call SimpleWorkspaces#open('<args>')
 command! -nargs=0 WorkspaceQuit call SimpleWorkspaces#quit()
+
+function! s:AvailableWorkspaces(a,b,c)
+	if isdirectory('g:workspace_prefix')
+		return []
+	endif
+endfunction
+
