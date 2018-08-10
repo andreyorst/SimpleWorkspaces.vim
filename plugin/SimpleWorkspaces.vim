@@ -30,9 +30,8 @@ endfunction
 function! s:SaveWorkspace()
 	if exists('g:open_previous_workspace') && filereadable('./.workspace')
 		if g:open_previous_workspace > 0
-			let l:workspace = SimpleWorkspaces#getWorkspaceMetadata()
-			if !empty(l:workspace)
-				let workspace_name = substitute(l:workspace[0], '\v.*:\s+(.*)', '\1', &gd ? 'gg' : 'g')
+			let l:workspace_name = SimpleWorkspaces#isInsideWorkspace()
+			if l:workspace_name >= 0
 				call writefile(l:workspace_name, g:last_workspace_path, '')
 			endif
 		endif

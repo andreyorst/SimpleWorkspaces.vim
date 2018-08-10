@@ -59,8 +59,11 @@ function! SimpleWorkspaces#add(...)
 		let l:path = fnameescape(getcwd()).'/'.l:path
 		let l:answer = input("No active workspace found. Create new workspace? [Y/n]: ")
 		if l:answer ==? 'y' || l:answer == ''
-			call SimpleWorkspaces#init()
-			return s:MakeLink(l:path, s:current_workspace_path)
+			if SimpleWorkspaces#init() == 0
+				if SimpleWorkspaces#isInsideWorkspace() != -1
+					return s:MakeLink(l:path, s:current_workspace_path)
+				endif
+			endif
 		else
 			return 0
 		endif
@@ -76,8 +79,10 @@ function! SimpleWorkspaces#rm(...)
 		echo "[ERROR] Too many arguments"
 		return -1
 	endif
-	if fnameescape(getcwd()) == s:current_workspace_path
-		let l:path = substitute(l:path, '\v(.*)/.*', '\1', &gd ? 'gg' : 'g')
+	if SimpleWorkspaces#isInsideWorkspace() != -1
+		if isdirectory(l:path) && l:path[len(l:path) - 1] == '/'
+			let l:path = substitute(l:path, '\v(.*)/.*', '\1', &gd ? 'gg' : 'g')
+		endif
 		return s:Delete(l:path, "[ERROR] cannot delete ".l:path)
 	else
 		echo "[ERROR] Not inside workspace"
@@ -151,13 +156,20 @@ function! s:MakeLink(path, workspace)
 	return 0
 endfunction
 
+function! SimpleWorkspaces#isInsideWorkspace()
+	let l:metadata = SimpleWorkspaces#getWorkspaceMetadata()
+	if !empty(l:metadata)
+		let l:workspace_name = substitute(l:metadata[0], '\v.*:\s+(.*)', '\1', &gd ? 'gg' : 'g')
+		return l:workspace_name
+	endif
+	return -1
+endfunction
+
 function! SimpleWorkspaces#getWorkspaceMetadata()
 	let l:metadata = []
-	if !filereadable('./.workspace')
-		echo "[ERROR] Attemt to save workspace outside of workspace"
-	else
+	if filereadable('./.workspace')
 		let l:metadata = readfile('./.workspace')
-		if match(l:metada[0], 'workspace name') != 0
+		if match(l:metadata[0], 'workspace name') != 0
 			echo "[ERROR] Corrupted workspace metadata"
 			let l:metadata = []
 		endif
