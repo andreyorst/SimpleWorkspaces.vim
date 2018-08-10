@@ -28,10 +28,10 @@ function! s:RestoreWorkspace()
 endfunction
 
 function! s:SaveWorkspace()
-	if exists('g:open_previous_workspace') && filereadable('./.workspace')
+	if exists('g:open_previous_workspace')
 		if g:open_previous_workspace > 0
-			let l:workspace_name = SimpleWorkspaces#isInsideWorkspace()
-			if l:workspace_name >= 0
+			let l:workspace_name = SimpleWorkspaces#isInside()
+			if l:workspace_name != -1
 				call writefile(l:workspace_name, g:last_workspace_path, '')
 			endif
 		endif
@@ -42,3 +42,4 @@ command! -nargs=? -complete=file WorkspaceInit call SimpleWorkspaces#init('<args
 command! -nargs=? -complete=file WorkspaceAdd call SimpleWorkspaces#add('<args>')
 command! -nargs=? -complete=file WorkspaceDelete call SimpleWorkspaces#rm('<args>')
 command! -nargs=? -complete=file WorkspaceOpen call SimpleWorkspaces#open('<args>')
+command! -nargs=0 WorkspaceQuit call SimpleWorkspaces#quit()

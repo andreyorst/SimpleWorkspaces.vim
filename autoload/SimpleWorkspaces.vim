@@ -1,4 +1,5 @@
 let s:current_workspace_path = ''
+let s:pre_workspace_path = ''
 
 function! SimpleWorkspaces#init(...)
 	if a:0 == 0 || a:1 == ''
@@ -60,7 +61,7 @@ function! SimpleWorkspaces#add(...)
 		let l:answer = input("No active workspace found. Create new workspace? [Y/n]: ")
 		if l:answer ==? 'y' || l:answer == ''
 			if SimpleWorkspaces#init() == 0
-				if SimpleWorkspaces#isInsideWorkspace() != -1
+				if SimpleWorkspaces#isInside() != -1
 					return s:MakeLink(l:path, s:current_workspace_path)
 				endif
 			endif
@@ -79,7 +80,7 @@ function! SimpleWorkspaces#rm(...)
 		echo "[ERROR] Too many arguments"
 		return -1
 	endif
-	if SimpleWorkspaces#isInsideWorkspace() != -1
+	if SimpleWorkspaces#isInside() != -1
 		if isdirectory(l:path) && l:path[len(l:path) - 1] == '/'
 			let l:path = substitute(l:path, '\v(.*)/.*', '\1', &gd ? 'gg' : 'g')
 		endif
@@ -92,6 +93,7 @@ endfunction
 
 function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
 	let l:workspace_path = expand(a:workspace_prefix.'/'.a:workspace_name)
+	let l:current_path = getcwd()
 	try
 		call mkdir(l:workspace_path, 'p')
 	catch
@@ -109,6 +111,9 @@ function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
 		echo "[ERROR] Cannot change working directory to ".g:workspace_prefix
 		return -1
 	endtry
+	if s:pre_workspace_path == ''
+		let s:pre_workspace_path = l:current_path
+	endif
 	if a:dir != l:workspace_path
 		return s:MakeLink(a:dir, l:workspace_path)
 	endif
@@ -156,8 +161,8 @@ function! s:MakeLink(path, workspace)
 	return 0
 endfunction
 
-function! SimpleWorkspaces#isInsideWorkspace()
-	let l:metadata = SimpleWorkspaces#getWorkspaceMetadata()
+function! SimpleWorkspaces#isInside()
+	let l:metadata = SimpleWorkspaces#getMetadata()
 	if !empty(l:metadata)
 		let l:workspace_name = substitute(l:metadata[0], '\v.*:\s+(.*)', '\1', &gd ? 'gg' : 'g')
 		return l:workspace_name
@@ -165,7 +170,7 @@ function! SimpleWorkspaces#isInsideWorkspace()
 	return -1
 endfunction
 
-function! SimpleWorkspaces#getWorkspaceMetadata()
+function! SimpleWorkspaces#getMetadata()
 	let l:metadata = []
 	if filereadable('./.workspace')
 		let l:metadata = readfile('./.workspace')
@@ -193,3 +198,10 @@ function! s:Delete(path, prompt)
 	endif
 endfunction
 
+function! SimpleWorkspaces#quit()
+	if s:pre_workspace_path != ''
+		exec "cd ".s:pre_workspace_path
+	else
+		cd $HOME
+	endif
+endfunction
