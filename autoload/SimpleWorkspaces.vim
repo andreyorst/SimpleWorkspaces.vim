@@ -60,7 +60,7 @@ function! SimpleWorkspaces#add(...)
 		echo "[ERROR] Too many arguments"
 		return -1
 	endif
-	if fnameescape(getcwd()) == s:current_workspace_path
+	if SimpleWorkspaces#isInside() != -1
 		return s:MakeLink(l:path, s:current_workspace_path)
 	else
 		let l:path = fnameescape(getcwd()).'/'.l:path
@@ -139,6 +139,7 @@ function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
 	if a:dir != l:workspace_path
 		return s:MakeLink(a:dir, l:workspace_path)
 	endif
+	call s:SaveWorkspace()
 endfunction
 
 function! SimpleWorkspaces#open(...)
@@ -162,6 +163,7 @@ function! SimpleWorkspaces#open(...)
 	try
 		if filereadable(l:workspace_path.'/.workspace')
 			exec "cd ".l:workspace_path
+			call s:SaveWorkspace()
 			return 0
 		else
 			echo "[ERROR] Directory ".l:workspace_path." is not a workspace"
@@ -225,6 +227,17 @@ function! SimpleWorkspaces#quit()
 		exec "cd ".s:pre_workspace_path
 	else
 		cd $HOME
+	endif
+endfunction
+
+function! s:SaveWorkspace()
+	if exists('g:open_previous_workspace')
+		if g:open_previous_workspace > 0
+			let l:workspace_name = SimpleWorkspaces#isInside()
+			if l:workspace_name != -1
+				call writefile([l:workspace_name], g:last_workspace_path, '')
+			endif
+		endif
 	endif
 endfunction
 
