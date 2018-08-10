@@ -97,6 +97,22 @@ function! SimpleWorkspaces#rm(...)
 	endif
 endfunction
 
+function! s:Delete(path, prompt)
+	if !isdirectory(expand(a:path)) && !filereadable(expand(a:path))
+		redraw
+		echo a:prompt
+		return -1
+	else
+		try
+			call delete(a:path, 'rf')
+		catch
+			redraw
+			echo a:prompt
+			return -1
+		endtry
+	endif
+endfunction
+
 function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
 	let l:workspace_path = expand(a:workspace_prefix.'/'.a:workspace_name)
 	let l:current_path = getcwd()
@@ -132,12 +148,14 @@ function! SimpleWorkspaces#open(workspace_path)
 			exec "cd ".g:workspace_prefix.'/'.a:workspace_path
 			return 0
 		endif
-	elseif l:match == 0
-		exec "cd ".a:workspace_path
-		return 0
 	endif
 	try
-		exec "cd ".a:workspace_path
+		if filereadable(a:workspace_path.'/.workspace')
+			exec "cd ".a:workspace_path
+			return 0
+		else
+			echo "[ERROR] Directory ".a:workspace_path." is not a workspace"
+		endif
 	catch
 		echo "[ERROR] Cannot change working directory to ".a:workspace_path
 		return -1
@@ -172,7 +190,7 @@ function! s:MakeLink(path, workspace)
 endfunction
 
 function! SimpleWorkspaces#isInside()
-	let l:metadata = SimpleWorkspaces#getMetadata()
+	let l:metadata = s:GetMetadata()
 	if !empty(l:metadata)
 		let l:workspace_name = substitute(l:metadata[0], '\v.*:\s+(.*)', '\1', &gd ? 'gg' : 'g')
 		return l:workspace_name
@@ -180,7 +198,7 @@ function! SimpleWorkspaces#isInside()
 	return -1
 endfunction
 
-function! SimpleWorkspaces#getMetadata()
+function! s:GetMetadata()
 	let l:metadata = []
 	if filereadable('./.workspace')
 		let l:metadata = readfile('./.workspace')
@@ -192,22 +210,6 @@ function! SimpleWorkspaces#getMetadata()
 	return l:metadata
 endfunction
 
-function! s:Delete(path, prompt)
-	if !isdirectory(expand(a:path)) && !filereadable(expand(a:path))
-		redraw
-		echo a:prompt
-		return -1
-	else
-		try
-			call delete(a:path, 'rf')
-		catch
-			redraw
-			echo a:prompt
-			return -1
-		endtry
-	endif
-endfunction
-
 function! SimpleWorkspaces#quit()
 	if s:pre_workspace_path != ''
 		exec "cd ".s:pre_workspace_path
@@ -215,3 +217,4 @@ function! SimpleWorkspaces#quit()
 		cd $HOME
 	endif
 endfunction
+
