@@ -142,7 +142,11 @@ function! s:MakeLink(path, workspace)
 	redraw
 	if has('win64') || has('win32') || has('win16')
 		try
-			silent exec '!mklink /D '.a:path.' '.a:workspace
+			if isdirectory(a:path)
+				silent exec '!mklink /D '.a:path.' '.a:workspace
+			elseif filereadable(a:path)
+				silent exec '!mklink '.a:path.' '.a:workspace
+			endif
 		catch
 			echo "[ERROR] Cannot add directory to workspace"
 			return -1
