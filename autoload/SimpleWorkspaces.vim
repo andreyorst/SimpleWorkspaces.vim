@@ -141,12 +141,23 @@ function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
 	endif
 endfunction
 
-function! SimpleWorkspaces#open(workspace_path)
-	let l:match = match(expand(g:workspace_prefix.'/'.a:workspace_path), expand(a:workspace_path))
-	if l:match > 0 && isdirectory(expand(g:workspace_prefix.'/'.a:workspace_path))
-		let l:workspace_path = expand(g:workspace_prefix.'/'.a:workspace_path)
+function! SimpleWorkspaces#open(...)
+	if a:0 == 0 || a:1 == ''
+		let l:workspace_path = expand(input("Workspaace name,or path: ", "", "file"))
+		if l:workspace_path == ''
+			return 0
+		endif
+	elseif a:0 == 1
+		let l:workspace_path = a:1
 	else
-		let l:workspace_path = a:workspace_path
+		echo "[ERROR] Too many arguments"
+		return -1
+	endif
+	let l:match = match(expand(g:workspace_prefix.'/'.l:workspace_path), expand(l:workspace_path))
+	if l:match > 0 && isdirectory(expand(g:workspace_prefix.'/'.l:workspace_path))
+		let l:workspace_path = expand(g:workspace_prefix.'/'.l:workspace_path)
+	else
+		let l:workspace_path = l:workspace_path
 	endif
 	try
 		if filereadable(l:workspace_path.'/.workspace')
