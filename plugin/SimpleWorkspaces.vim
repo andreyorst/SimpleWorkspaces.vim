@@ -45,8 +45,13 @@ command! -nargs=? -complete=custom,s:AvailableWorkspaces WorkspaceOpen call Simp
 command! -nargs=0 WorkspaceQuit call SimpleWorkspaces#quit()
 
 function! s:AvailableWorkspaces(a,b,c)
-	if isdirectory('g:workspace_prefix')
-		return []
+	if isdirectory(g:workspace_prefix)
+		let l:workspace_names = []
+		for workspace in split(globpath(g:workspace_prefix, '*'), '\n')
+			call add(l:workspace_names, substitute(workspace, '\v.*/(.*)$', '\1', &gd ? 'gg' : 'g'))
+		endfor
+		return join(l:workspace_names, "\n")
 	endif
+	return ''
 endfunction
 
