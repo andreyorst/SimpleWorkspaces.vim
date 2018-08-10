@@ -1,8 +1,8 @@
-if exists('g:loaded_simpleworkspaces')
+if exists('did_load_simpleworkspaces')
 	finish
 endif
 
-let g:loaded_simpleworkspaces = 1
+let did_load_simpleworkspaces = 1
 
 augroup PreviousWorkspaceHandling
 	autocmd!

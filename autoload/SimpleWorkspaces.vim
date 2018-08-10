@@ -1,3 +1,9 @@
+if exists('b:did_autoload_simpleworkspaces')
+	finish
+endif
+
+let b:did_autoload_simpleworkspaces = 1
+
 let s:current_workspace_path = ''
 let s:pre_workspace_path = ''
 
