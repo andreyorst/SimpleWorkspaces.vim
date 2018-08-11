@@ -24,7 +24,7 @@ If you're using [vim-plug](https://github.com/junegunn/vim-plug),  add  this  to
 your `.vimrc` or `init.vim`:
 
 ```vim
-Plug 'andreyorst/SimpleClangFormat.vim'
+Plug 'andreyorst/SimpleWorkspaces.vim'
 ```
 
 Then:
@@ -43,7 +43,7 @@ After installation new commands will be added to Vim:
 - `:WorkspaceDelete` - removes file or directory from current workspace
 - `:WorkspaceQuit`   - exits workspace
 
-More deep explanations are available in [docs]().
+More deep explanations are available in [docs](https://github.com/andreyorst/SimpleWorkspaces.vim/blob/master/doc/SimpleWorkspaces.txt).
 
 This plugin will ask you to create a *workspace prefix*, which  is  a  directory
 where workspaces are stored.  By default it is `~/.cache/vim_workspaces`, if you
