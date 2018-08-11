@@ -67,9 +67,9 @@ Then do:
 
 SimpleWorkspaces   can   be   configured   where    to    store    workspaces.
 `g:workspace_prefix` variable stores a path to a folder, where workspaces  are
-stored. By default it is set to: `/tmp/`
+stored. By default it is set to: `$HOME/.cache/vim_workspaces/`
 
-SimpleWorkspaces  can  open  your  previous  workspace   on   vim   open,   if
+SimpleWorkspaces  can  open  your  previous  workspace   on   Vim   open,   if
 `g:open_previous_workspace` variable is set to positive value.
 
 
@@ -79,18 +79,35 @@ SimpleWorkspaces  can  open  your  previous  workspace   on   vim   open,   if
 SimpleWorkspaces provides  several  commands  to  manipulate  workspaces,  and
 files.
 
-`WorkspaceInit` will add current directory to new workspace.  You can  specify
-which directory to use.
+:WorkspaceInit [dir]                                             *WorkspaceInit*
+                         Will add current directory to new  workspace. You can
+                         also specify which directory to  use.   This  command
+                         generates a name for a  workspace  based  on  current
+                         Vim Process ID, and  creates `.workspace`  file in this
+                         workspace.  This  file  contains  workspace name, and
+                         creation date.  Workspace without such  file  is  not
+                         valid.
 
-`WorkspaceAdd` will add directory or file to current workspace.  If no  active
-workspace found it will ask if you would like to  create  new  workspace,  and
-will init it with current directory, and then add desired directory.
+:WorkspaceOpen {workspace}                                       *WorkspaceOpen*
+                         Opens  existing  workspace.  Supports  completion  of
+                         existing workspaces by name, or path to workspace  as
+                         argument, if no argument given,  asks  if  you  would
+                         like to open workspace by path or name.
 
-`WorkspaceDelete` work opposite to `WorkspaceAdd`.  It can  remove  files  and
-folders only from the workspace, and should not be used to remove  files  from
-added folders.
+:WorkspaceAdd {folder,file}                                       *WorkspaceAdd*
+                         Adds directory or  file to  current workspace.  If no
+                         active workspace found it will ask if you would  like
+                         to create  new  workspace,  and  will  init  it  with
+                         current directory, and then  add  desired  directory.
 
-`WorkspaceOpen` opens existing workspace folder.
+:WorkspaceAdd {folder,file}                                    *WorkspaceDelete*
+                         Works opposite to `WorkspaceAdd`.  It can  remove files
+                         and folders only from the workspace, and  should  not
+                         be  used  to  remove  files   from   added   folders.
+
+:WorkspaceQuit                                                   *WorkspaceQuit*
+                         Exits workspace  to directory  which  you were before
+                         workspace was opened.
 
 
 ==============================================================================
