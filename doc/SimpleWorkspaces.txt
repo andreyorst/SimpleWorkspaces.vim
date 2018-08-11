@@ -79,7 +79,7 @@ SimpleWorkspaces  can  open  your  previous  workspace   on   Vim   open,   if
 SimpleWorkspaces provides  several  commands  to  manipulate  workspaces,  and
 files.
 
-:WorkspaceInit [dir]                                             *WorkspaceInit*
+:WorkspaceInit {dir}                                             *WorkspaceInit*
                          Will add current directory to new  workspace. You can
                          also specify which directory to  use.   This  command
                          generates a name for a  workspace  based  on  current
@@ -100,7 +100,7 @@ files.
                          to create  new  workspace,  and  will  init  it  with
                          current directory, and then  add  desired  directory.
 
-:WorkspaceAdd {folder,file}                                    *WorkspaceDelete*
+:WorkspaceDelete {folder,file}                                 *WorkspaceDelete*
                          Works opposite to `WorkspaceAdd`.  It can  remove files
                          and folders only from the workspace, and  should  not
                          be  used  to  remove  files   from   added   folders.
