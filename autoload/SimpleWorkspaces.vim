@@ -80,16 +80,14 @@ endfunction
 function! SimpleWorkspaces#rm(...)
 	if a:0 == 0
 		let l:path = expand(input("Directory or file to delete: ", "file"))
-	elseif a:0 == 1
+	elseif a:0 == 1 && a:1 != '.workspace'
 		let l:path = a:1
 	else
 		echo "[ERROR] Too many arguments"
 		return -1
 	endif
 	if SimpleWorkspaces#isInside() != -1
-		if isdirectory(l:path) && l:path[len(l:path) - 1] == '/'
-			let l:path = substitute(l:path, '\v(.*)/.*', '\1', &gd ? 'gg' : 'g')
-		endif
+		let l:path = substitute(l:path, '\v(.*)/.*', '\1', &gd ? 'gg' : 'g')
 		return s:Delete(l:path, "[ERROR] cannot delete ".l:path)
 	else
 		echo "[ERROR] Not inside workspace"
@@ -129,6 +127,7 @@ function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
 					\ 'date created: '. strftime('%b %d %Y %X'),
 					\ ]
 		call writefile(l:metadata, './.workspace', '')
+		call s:SaveWorkspace()
 	catch
 		echo "[ERROR] Cannot change working directory to ".g:workspace_prefix
 		return -1
@@ -139,7 +138,6 @@ function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
 	if a:dir != l:workspace_path
 		return s:MakeLink(a:dir, l:workspace_path)
 	endif
-	call s:SaveWorkspace()
 endfunction
 
 function! SimpleWorkspaces#open(...)
