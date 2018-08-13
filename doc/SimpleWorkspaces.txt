@@ -65,12 +65,28 @@ Then do:
 3.1 Settings
 ------------
 
-SimpleWorkspaces   can   be   configured   where    to    store    workspaces.
-`g:workspace_prefix` variable stores a path to a folder, where workspaces  are
-stored. By default it is set to: `$HOME/.cache/vim_workspaces/`
+These are  global  variables,  which  plugin relies  on  when it operates with
+workspaces:
 
-SimpleWorkspaces  can  open  your  previous  workspace   on   Vim   open,   if
-`g:open_previous_workspace` variable is set to positive value.
+`g:SimpleWorkspaces#prefix`
+                         A path where to store workspaces.  May  be  used  for
+                         storing  temporary   workspaces  if  set  to   `/tmp/`.
+                         Default value `$HOME.'/.cache/vim_workspaces'`
+
+`g:SimpleWorkspaces#open_previous`
+                         Open previois used workspace on Vim startup.  Default
+                         value is `0`.
+
+`g:SimpleWorkspaces#last_workspace`
+                         A path to store path to last used  workspace.   Being
+                         used  if  `g:SimpleWorkspaces#open_previous` is set  to
+                         positive value. File itself should not be modified by
+                         user. Default value  is `$HOME.'/.vim_last_workspace'`.
+
+`g:SimpleWorkspaces#manual_save_path`
+                         A path where to save manually saved  workspaces  with
+                         |WorkspaceSave|.
+                         Default value is `$HOME.'/.vim/saved_workspaces'`.
 
 
 3.2 Commands                                         *SimpleWorkspaces-commands*
@@ -94,13 +110,13 @@ files.
                          argument, if no argument given,  asks  if  you  would
                          like to open workspace by path or name.
 
-:WorkspaceAdd {folder,file}                                       *WorkspaceAdd*
+:WorkspaceAdd {file}                                              *WorkspaceAdd*
                          Adds directory or  file to  current workspace.  If no
                          active workspace found it will ask if you would  like
                          to create  new  workspace,  and  will  init  it  with
                          current directory, and then  add  desired  directory.
 
-:WorkspaceDelete {folder,file}                                 *WorkspaceDelete*
+:WorkspaceDelete {file}                                        *WorkspaceDelete*
                          Works opposite to `WorkspaceAdd`.  It can  remove files
                          and folders only from the workspace, and  should  not
                          be  used  to  remove  files   from   added   folders.
@@ -108,6 +124,10 @@ files.
 :WorkspaceQuit                                                   *WorkspaceQuit*
                          Exits workspace  to directory  which  you were before
                          workspace was opened.
+
+:WorkspaceSave {name}                                            *WorkspaceSave*
+                         Save workspace with a meaningful name.   If  no  save
+                         path configured, will ask where to save.
 
 
 ==============================================================================
