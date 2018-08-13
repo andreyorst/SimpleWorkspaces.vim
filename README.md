@@ -42,6 +42,7 @@ After installation new commands will be added to Vim:
 - `:WorkspaceAdd`    - adds file or directory to current workspace
 - `:WorkspaceDelete` - removes file or directory from current workspace
 - `:WorkspaceQuit`   - exits workspace
+- `:WorkspaceSave`   - save workspace with a meaningful name
 
 More deep explanations are available in [docs](https://github.com/andreyorst/SimpleWorkspaces.vim/blob/master/doc/SimpleWorkspaces.txt).
 
