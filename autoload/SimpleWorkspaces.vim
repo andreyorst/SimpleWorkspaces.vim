@@ -17,11 +17,11 @@ function! SimpleWorkspaces#init(...)
 		return -1
 	endif
 	let l:workspace_name = 'workspace_'.getpid()
-	let s:current_workspace_path = expand(g:workspace_prefix.'/'.l:workspace_name)
-	if !isdirectory(g:workspace_prefix)
-		let l:answer = input("Cannot reach workspace prefix. Create ".g:workspace_prefix."? [Y/n] ")
+	let s:current_workspace_path = expand(g:SimpleWorkspaces#prefix.'/'.l:workspace_name)
+	if !isdirectory(g:SimpleWorkspaces#prefix)
+		let l:answer = input("Cannot reach workspace prefix. Create ".g:SimpleWorkspaces#prefix."? [Y/n] ")
 		if l:answer ==? 'y' || l:answer == ''
-			call mkdir(g:workspace_prefix, 'p')
+			call mkdir(g:SimpleWorkspaces#prefix, 'p')
 		elseif l:answer ==? 'n' || l:answer == ''
 			return 0
 		endif
@@ -34,7 +34,7 @@ function! SimpleWorkspaces#init(...)
 			catch
 				return -1
 			endtry
-			return s:CreateWorkspace(l:current_dir, g:workspace_prefix, l:workspace_name)
+			return s:CreateWorkspace(l:current_dir, g:SimpleWorkspaces#prefix, l:workspace_name)
 		elseif l:answer ==? 'n' || l:answer == ''
 			let l:answer = input("Open workspace ".l:workspace_name. "? [Y/n]: ")
 			if  l:answer ==? 'y' || l:answer == ''
@@ -47,7 +47,7 @@ function! SimpleWorkspaces#init(...)
 			return -1
 		endif
 	else
-		return s:CreateWorkspace(l:current_dir, g:workspace_prefix, l:workspace_name)
+		return s:CreateWorkspace(l:current_dir, g:SimpleWorkspaces#prefix, l:workspace_name)
 	endif
 endfunction
 
@@ -111,8 +111,8 @@ function! s:Delete(path, prompt)
 	endif
 endfunction
 
-function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
-	let l:workspace_path = expand(a:workspace_prefix.'/'.a:workspace_name)
+function! s:CreateWorkspace(dir, prefix, workspace_name)
+	let l:workspace_path = expand(a:prefix.'/'.a:workspace_name)
 	let l:current_path = getcwd()
 	try
 		call mkdir(l:workspace_path, 'p')
@@ -129,7 +129,7 @@ function! s:CreateWorkspace(dir, workspace_prefix, workspace_name)
 		call writefile(l:metadata, './.workspace', '')
 		call s:SaveWorkspace()
 	catch
-		echo "[ERROR] Cannot change working directory to ".g:workspace_prefix
+		echo "[ERROR] Cannot change working directory to ".g:SimpleWorkspaces#prefix
 		return -1
 	endtry
 	if s:pre_workspace_path == ''
@@ -152,14 +152,20 @@ function! SimpleWorkspaces#open(...)
 		echo "[ERROR] Too many arguments"
 		return -1
 	endif
-	let l:match = match(expand(g:workspace_prefix.'/'.l:workspace_path), expand(l:workspace_path))
-	if l:match > 0 && isdirectory(expand(g:workspace_prefix.'/'.l:workspace_path))
-		let l:workspace_path = expand(g:workspace_prefix.'/'.l:workspace_path)
+	if isdirectory(expand(g:SimpleWorkspaces#prefix.'/'.l:workspace_path))
+		let l:workspace_path = expand(g:SimpleWorkspaces#prefix.'/'.l:workspace_path)
+	elseif exists('g:SimpleWorkspaces#manual_save_path')
+		if isdirectory(g:SimpleWorkspaces#manual_save_path.'/'.l:workspace_path)
+			let l:workspace_path = expand(g:SimpleWorkspaces#manual_save_path.'/'.l:workspace_path)
+		endif
 	else
 		let l:workspace_path = l:workspace_path
 	endif
 	try
 		if filereadable(l:workspace_path.'/.workspace')
+			if s:pre_workspace_path == ''
+				let s:pre_workspace_path = getcwd()
+			endif
 			exec "cd ".l:workspace_path
 			call s:SaveWorkspace()
 			return 0
@@ -229,13 +235,53 @@ function! SimpleWorkspaces#quit()
 endfunction
 
 function! s:SaveWorkspace()
-	if exists('g:open_previous_workspace')
-		if g:open_previous_workspace > 0
+	if exists('g:SimpleWorkspaces#open_previous')
+		if g:SimpleWorkspaces#open_previous > 0
 			let l:workspace_name = SimpleWorkspaces#isInside()
 			if l:workspace_name != -1
-				call writefile([l:workspace_name], g:last_workspace_path, '')
+				call writefile([l:workspace_name], g:SimpleWorkspaces#last_workspace, '')
 			endif
 		endif
 	endif
 endfunction
 
+function! SimpleWorkspaces#save(...)
+	let l:workspace_name = SimpleWorkspaces#isInside()
+	if l:workspace_name != -1
+		if a:0 == 0 || a:1 == ''
+			let save_name = input("Save as: ", l:workspace_name)
+			if save_name == ''
+				return 0
+			endif
+		elseif a:0 == 1
+			let save_name = a:1
+		else
+			echo "[ERROR] Too many arguments"
+			return -1
+		endif
+		if !exists('g:SimpleWorkspaces#manual_save_path') || g:SimpleWorkspaces#manual_save_path == ''
+			let l:save_path = expand(input("Folder to save: ", "", "dir"))
+		else
+			let l:save_path = g:SimpleWorkspaces#manual_save_path
+		endif
+		let l:save_path .= '/'.l:save_name
+		if !isdirectory(l:save_path)
+			call mkdir(l:save_path, 'p')
+		endif
+		let l:metadata = [
+					\ 'workspace name: '.l:save_name,
+					\ 'date created: '. strftime('%b %d %Y %X'),
+					\ ]
+		call writefile(l:metadata, './.workspace', '')
+		for l:file in split(globpath('.', '*'), '\n')
+			let l:name = substitute(l:file, '\v.*/(.*)', '\1', &gd ? 'gg' : 'g')
+			call rename(l:file, l:save_path.'/'.l:name)
+		endfor
+		for l:file in split(globpath('.', '.*'), '\n')
+			let l:name = substitute(l:file, '\v.*/(.*)', '\1', &gd ? 'gg' : 'g')
+			call rename(l:file, l:save_path.'/'.l:name)
+		endfor
+		call writefile([l:save_path], g:SimpleWorkspaces#last_workspace, '')
+		exec "cd ".l:save_path
+	endif
+endfunction
