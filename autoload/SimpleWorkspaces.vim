@@ -128,6 +128,7 @@ function! s:CreateWorkspace(dir, prefix, workspace_name)
 					\ ]
 		call writefile(l:metadata, './.workspace', '')
 		call s:SaveWorkspace()
+		echo "Created ".a:workspace_name
 	catch
 		echo "[ERROR] Cannot change working directory to ".g:SimpleWorkspaces#prefix
 		return -1
