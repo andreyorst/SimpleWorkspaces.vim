@@ -33,8 +33,13 @@ command! -nargs=0 WorkspaceQuit call SimpleWorkspaces#quit()
 function! s:AvailableWorkspaces(a,b,c)
 	if isdirectory(g:SimpleWorkspaces#prefix)
 		let l:workspace_names = []
-		for workspace in split(globpath(g:SimpleWorkspaces#prefix, '*'), '\n')
-			call add(l:workspace_names, substitute(workspace, '\v.*/(.*)$', '\1', &gd ? 'gg' : 'g'))
+		if isdirectory(g:SimpleWorkspaces#manual_save_path)
+			for workspace in split(globpath(g:SimpleWorkspaces#manual_save_path, '*/.workspace'), '\n')
+				call add(l:workspace_names, substitute(workspace, '\v.*/(.*)/.workspace$', '\1', &gd ? 'gg' : 'g'))
+			endfor
+		endif
+		for workspace in split(globpath(g:SimpleWorkspaces#prefix, '*/.workspace'), '\n')
+			call add(l:workspace_names, substitute(workspace, '\v.*/(.*)/.workspace$', '\1', &gd ? 'gg' : 'g'))
 		endfor
 		return join(l:workspace_names, "\n")
 	endif
