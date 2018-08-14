@@ -9,7 +9,7 @@ if !exists('g:SimpleWorkspaces#prefix')
 endif
 
 if !exists('g:SimpleWorkspaces#last_workspace')
-	let g:SimpleWorkspaces#last_workspace = $HOME.'/.vim_last_workspace'
+	let g:SimpleWorkspaces#last_workspace = $HOME.'/.config/vim_last_workspace'
 endif
 
 if !exists('g:SimpleWorkspaces#manual_save_path')
