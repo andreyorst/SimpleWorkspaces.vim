@@ -167,7 +167,7 @@ function! SimpleWorkspaces#open(...)
 				let s:pre_workspace_path = getcwd()
 			endif
 			exec "cd ".l:workspace_path
-			call s:SaveWorkspace()
+			call s:SaveWorkspace(l:workspace_path)
 			return 0
 		else
 			echo "[ERROR] Directory ".l:workspace_path." is not a workspace"
@@ -234,10 +234,14 @@ function! SimpleWorkspaces#quit()
 	endif
 endfunction
 
-function! s:SaveWorkspace()
+function! s:SaveWorkspace(...)
 	if exists('g:SimpleWorkspaces#open_previous')
 		if g:SimpleWorkspaces#open_previous > 0
-			let l:workspace_name = SimpleWorkspaces#isInside()
+			if a:0 == 0
+				let l:workspace_name = SimpleWorkspaces#isInside()
+			else
+				let l:workspace_name = a:1
+			endif
 			if l:workspace_name != -1
 				call writefile([l:workspace_name], g:SimpleWorkspaces#last_workspace, '')
 			endif
