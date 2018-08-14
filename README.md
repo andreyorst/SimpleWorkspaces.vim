@@ -1,5 +1,10 @@
 # SimpleWorkspaces.vim
 
+[![GitHub release](https://img.shields.io/github/release/andreyorst/simpleworkspaces.vim.svg)](https://github.com/andreyorst/SimpleWorkspaces.vim/releases)
+[![GitHub Release Date](https://img.shields.io/github/release-date/andreyorst/simpleworkspaces.vim.svg)](https://github.com/andreyorst/simpleworkspaces.vim/releases)
+![Github commits (since latest release)](https://img.shields.io/github/commits-since/andreyorst/simpleworkspaces.vim/latest.svg)
+![license](https://img.shields.io/github/license/andreyorst/simpleworkspaces.vim.svg)
+
 SimpleWorkspaces.vim is a plugin, which  provides  a  Visual  Studio  Code  like
 workspace feature to Vim and Neovim.
 
